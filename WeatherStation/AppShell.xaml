@@ -3,12 +3,34 @@
     x:Class="WeatherStation.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:local="clr-namespace:WeatherStation"
-    Title="WeatherStation">
+    xmlns:views="clr-namespace:WeatherStation.Views"
+    Shell.FlyoutBehavior="Disabled"
+    Title="Weather Station">
 
-    <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
+    <TabBar>
+        <ShellContent
+            Title="Forecast"
+            Icon="tab_forecast.png"
+            ContentTemplate="{DataTemplate views:ForecastPage}"
+            Route="ForecastPage" />
+
+        <ShellContent
+            Title="Compare"
+            Icon="tab_compare.png"
+            ContentTemplate="{DataTemplate views:ComparePage}"
+            Route="ComparePage" />
+
+        <ShellContent
+            Title="Planner"
+            Icon="tab_planner.png"
+            ContentTemplate="{DataTemplate views:PlannerPage}"
+            Route="PlannerPage" />
+
+        <ShellContent
+            Title="Settings"
+            Icon="tab_settings.png"
+            ContentTemplate="{DataTemplate views:SettingsPage}"
+            Route="SettingsPage" />
+    </TabBar>
 
 </Shell>
