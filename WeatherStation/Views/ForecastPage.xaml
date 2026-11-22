@@ -4,13 +4,14 @@
              x:Class="WeatherStation.Views.ForecastPage"
              Title="Forecast">
 
-    <VerticalStackLayout Padding="24" Spacing="12" VerticalOptions="Center">
-        <Label Text="Forecast"
-               FontSize="28"
-               HorizontalOptions="Center" />
-        <Label Text="Coming soon"
-               HorizontalOptions="Center"
-               TextColor="Gray" />
-    </VerticalStackLayout>
+    <ScrollView>
+        <VerticalStackLayout Padding="24" Spacing="12">
+            <Label Text="API test (temporary)" FontSize="24" />
+            <Picker x:Name="LocationPicker" Title="Choose a location" />
+            <Button Text="Fetch forecast" Clicked="OnFetchClicked" />
+            <ActivityIndicator x:Name="Spinner" IsRunning="False" />
+            <Label x:Name="ResultLabel" />
+        </VerticalStackLayout>
+    </ScrollView>
 
 </ContentPage>
