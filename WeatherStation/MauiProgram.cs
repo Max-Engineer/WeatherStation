@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using WeatherStation.Services;
 using WeatherStation.Views;
+using WeatherStation.ViewModels;
 
 namespace WeatherStation
 {
@@ -27,6 +28,7 @@ namespace WeatherStation
 
             // Pages (registered so they can receive services in their constructors)
             builder.Services.AddTransient<ForecastPage>();
+            builder.Services.AddTransient<ForecastViewModel>();
 
 #if DEBUG
             builder.Logging.AddDebug();

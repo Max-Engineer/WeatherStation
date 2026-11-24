@@ -1,22 +1,162 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:WeatherStation.ViewModels"
+             xmlns:models="clr-namespace:WeatherStation.Models"
              x:Class="WeatherStation.Views.ForecastPage"
+             x:DataType="vm:ForecastViewModel"
              Title="Forecast">
 
-    <ScrollView>
-        <VerticalStackLayout Padding="24" Spacing="10">
-            <Label Text="Storage test (temporary)" FontSize="24" />
-            <Label x:Name="PathLabel" FontSize="12" TextColor="Gray" />
-            <Picker x:Name="LocationPicker" Title="Choose a location" />
-            <Button Text="Fetch (saved copy allowed)" Clicked="OnFetchClicked" />
-            <Button Text="Force refresh" Clicked="OnRefreshClicked" />
-            <Button Text="Toggle favourite" Clicked="OnFavouriteClicked" />
-            <Button Text="Toggle temperature unit (test)" Clicked="OnToggleUnitClicked" />
-            <Button Text="Show saved data" Clicked="OnShowSavedClicked" />
-            <ActivityIndicator x:Name="Spinner" IsRunning="False" />
-            <Label x:Name="ResultLabel" />
-        </VerticalStackLayout>
-    </ScrollView>
+    <ContentPage.Resources>
+        <Style x:Key="CaptionLabel" TargetType="Label">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="TextColor"
+                    Value="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray300}}" />
+        </Style>
+    </ContentPage.Resources>
 
+    <Grid RowDefinitions="Auto,*,Auto">
+
+        <!-- Location picker and refresh button -->
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8" Padding="16,12,16,0">
+            <Picker Title="Choose a location"
+                    ItemsSource="{Binding Locations}"
+                    ItemDisplayBinding="{Binding DisplayName, x:DataType=models:WeatherLocation}"
+                    SelectedItem="{Binding SelectedLocation}" />
+            <ActivityIndicator Grid.Column="1"
+                               IsRunning="{Binding IsBusy}"
+                               IsVisible="{Binding IsBusy}"
+                               WidthRequest="24" HeightRequest="24"
+                               VerticalOptions="Center" />
+            <Button Grid.Column="2" Text="Refresh" Command="{Binding RefreshCommand}" />
+        </Grid>
+
+        <!-- Pull-to-refresh on touch screens; the button covers desktop -->
+        <RefreshView Grid.Row="1"
+                     IsRefreshing="{Binding IsBusy, Mode=OneWay}"
+                     Command="{Binding RefreshCommand}">
+            <ScrollView>
+                <VerticalStackLayout Padding="16" Spacing="16">
+
+                    <!-- Warning or error message -->
+                    <Border IsVisible="{Binding HasStatus}"
+                            BackgroundColor="#FEF3C7"
+                            Stroke="#F59E0B"
+                            StrokeThickness="1"
+                            StrokeShape="RoundRectangle 12"
+                            Padding="12">
+                        <Label Text="{Binding StatusMessage}" TextColor="#92400E" />
+                    </Border>
+
+                    <!-- Empty state -->
+                    <Label IsVisible="{Binding ShowEmptyState}"
+                           Text="Choose a location to see its forecast."
+                           HorizontalOptions="Center"
+                           Style="{StaticResource CaptionLabel}" />
+
+                    <!-- Current weather card -->
+                    <Border IsVisible="{Binding HasData}"
+                            BackgroundColor="{StaticResource Primary}"
+                            StrokeThickness="0"
+                            StrokeShape="RoundRectangle 20"
+                            Padding="20">
+                        <VerticalStackLayout Spacing="14">
+                            <Label Text="{Binding LocationName}"
+                                   FontSize="20"
+                                   TextColor="White" />
+
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="16">
+                                <Label Text="{Binding ConditionEmoji}"
+                                       FontSize="64"
+                                       VerticalOptions="Center" />
+                                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                                    <Label Text="{Binding TemperatureText}"
+                                           FontSize="48"
+                                           FontAttributes="Bold"
+                                           TextColor="White" />
+                                    <Label Text="{Binding ConditionText}" TextColor="White" />
+                                    <Label Text="{Binding FeelsLikeText}"
+                                           FontSize="13"
+                                           TextColor="#DBEAFE" />
+                                </VerticalStackLayout>
+                            </Grid>
+
+                            <Grid ColumnDefinitions="*,*,*">
+                                <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                    <Label Text="Wind" FontSize="12" TextColor="#BFDBFE" />
+                                    <Label Text="{Binding WindText}" FontAttributes="Bold" TextColor="White" />
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                    <Label Text="Humidity" FontSize="12" TextColor="#BFDBFE" />
+                                    <Label Text="{Binding HumidityText}" FontAttributes="Bold" TextColor="White" />
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Column="2" Spacing="2">
+                                    <Label Text="Rain now" FontSize="12" TextColor="#BFDBFE" />
+                                    <Label Text="{Binding RainNowText}" FontAttributes="Bold" TextColor="White" />
+                                </VerticalStackLayout>
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- 7-day forecast -->
+                    <VerticalStackLayout IsVisible="{Binding HasData}" Spacing="4">
+                        <Label Text="7-day forecast" FontSize="18" FontAttributes="Bold" />
+
+                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding Days}">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="vm:DailyForecastItem">
+                                    <VerticalStackLayout>
+                                        <BoxView HeightRequest="1"
+                                                 Color="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}" />
+                                        <Grid ColumnDefinitions="64,44,*,Auto"
+                                              ColumnSpacing="8"
+                                              Padding="0,10">
+                                            <VerticalStackLayout VerticalOptions="Center">
+                                                <Label Text="{Binding DayLabel}" FontAttributes="Bold" />
+                                                <Label Text="{Binding DateLabel}" Style="{StaticResource CaptionLabel}" />
+                                            </VerticalStackLayout>
+
+                                            <Label Grid.Column="1"
+                                                   Text="{Binding Emoji}"
+                                                   FontSize="28"
+                                                   VerticalOptions="Center" />
+
+                                            <VerticalStackLayout Grid.Column="2" VerticalOptions="Center">
+                                                <Label Text="{Binding Description}" />
+                                                <Label Text="{Binding DetailText}" Style="{StaticResource CaptionLabel}" />
+                                            </VerticalStackLayout>
+
+                                            <HorizontalStackLayout Grid.Column="3" Spacing="8" VerticalOptions="Center">
+                                                <Label Text="{Binding HighText}" FontAttributes="Bold" />
+                                                <Label Text="{Binding LowText}" Style="{StaticResource CaptionLabel}" VerticalOptions="Center" />
+                                            </HorizontalStackLayout>
+                                        </Grid>
+                                    </VerticalStackLayout>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+
+                        <Label Text="{Binding UpdatedText}"
+                               Style="{StaticResource CaptionLabel}"
+                               HorizontalOptions="Center"
+                               Margin="0,8,0,0" />
+                    </VerticalStackLayout>
+
+                </VerticalStackLayout>
+            </ScrollView>
+        </RefreshView>
+
+        <!-- Required credit (CC-BY 4.0) -->
+        <Label Grid.Row="2"
+               Text="Weather data by Open-Meteo.com"
+               TextDecorations="Underline"
+               Style="{StaticResource CaptionLabel}"
+               HorizontalOptions="Center"
+               Padding="0,6,0,10">
+            <Label.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnCreditTapped" />
+            </Label.GestureRecognizers>
+        </Label>
+
+    </Grid>
 </ContentPage>
