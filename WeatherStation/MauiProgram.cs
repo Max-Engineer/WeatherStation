@@ -19,6 +19,11 @@ namespace WeatherStation
             // Services
             builder.Services.AddSingleton(new HttpClient { Timeout = TimeSpan.FromSeconds(15) });
             builder.Services.AddSingleton<IWeatherService, WeatherService>();
+            builder.Services.AddSingleton<IJsonStorageService>(_ => new JsonStorageService(FileSystem.AppDataDirectory));
+            builder.Services.AddSingleton<ISettingsService, SettingsService>();
+            builder.Services.AddSingleton<IUserDataService, UserDataService>();
+            builder.Services.AddSingleton<IForecastCache, ForecastCache>();
+            builder.Services.AddSingleton<IForecastRepository, ForecastRepository>();
 
             // Pages (registered so they can receive services in their constructors)
             builder.Services.AddTransient<ForecastPage>();

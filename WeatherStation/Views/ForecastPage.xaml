@@ -5,10 +5,15 @@
              Title="Forecast">
 
     <ScrollView>
-        <VerticalStackLayout Padding="24" Spacing="12">
-            <Label Text="API test (temporary)" FontSize="24" />
+        <VerticalStackLayout Padding="24" Spacing="10">
+            <Label Text="Storage test (temporary)" FontSize="24" />
+            <Label x:Name="PathLabel" FontSize="12" TextColor="Gray" />
             <Picker x:Name="LocationPicker" Title="Choose a location" />
-            <Button Text="Fetch forecast" Clicked="OnFetchClicked" />
+            <Button Text="Fetch (saved copy allowed)" Clicked="OnFetchClicked" />
+            <Button Text="Force refresh" Clicked="OnRefreshClicked" />
+            <Button Text="Toggle favourite" Clicked="OnFavouriteClicked" />
+            <Button Text="Toggle temperature unit (test)" Clicked="OnToggleUnitClicked" />
+            <Button Text="Show saved data" Clicked="OnShowSavedClicked" />
             <ActivityIndicator x:Name="Spinner" IsRunning="False" />
             <Label x:Name="ResultLabel" />
         </VerticalStackLayout>
