@@ -69,10 +69,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="ViewModels\" />
-	</ItemGroup>
-
-	<ItemGroup>
 	  <MauiXaml Update="Views\ComparePage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
