@@ -106,8 +106,8 @@ public class ForecastViewModel : BaseViewModel
     public string ConditionText =>
         WeatherCodes.Describe(_forecast?.Current?.WeatherCode ?? -1).Description;
 
-    public string ConditionEmoji =>
-        WeatherCodes.Describe(_forecast?.Current?.WeatherCode ?? -1).Emoji;
+    public string ConditionIcon =>
+    WeatherCodes.Describe(_forecast?.Current?.WeatherCode ?? -1).Icon;
 
     public string WindText =>
         WeatherFormatter.Wind(_forecast?.Current?.WindSpeed, _settings.WindSpeedUnit);
@@ -246,7 +246,7 @@ public class ForecastViewModel : BaseViewModel
         {
             DayLabel = day.Date == locationToday ? "Today" : day.Date.ToString("ddd"),
             DateLabel = day.Date.ToString("dd MMM"),
-            Emoji = info.Emoji,
+            Icon = info.Icon,
             Description = info.Description,
             DetailText = $"Rain {rain} · Wind {wind}",
             HighText = WeatherFormatter.Temperature(day.TempMax, _settings.TemperatureUnit),

@@ -66,9 +66,11 @@
                                    TextColor="White" />
 
                             <Grid ColumnDefinitions="Auto,*" ColumnSpacing="16">
-                                <Label Text="{Binding ConditionEmoji}"
-                                       FontSize="64"
-                                       VerticalOptions="Center" />
+                                <Image Source="{Binding ConditionIcon}"
+                                       WidthRequest="80"
+                                       HeightRequest="80"
+                                       VerticalOptions="Center"
+                                       SemanticProperties.Description="{Binding ConditionText}" />
                                 <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
                                     <Label Text="{Binding TemperatureText}"
                                            FontSize="48"
@@ -116,10 +118,12 @@
                                                 <Label Text="{Binding DateLabel}" Style="{StaticResource CaptionLabel}" />
                                             </VerticalStackLayout>
 
-                                            <Label Grid.Column="1"
-                                                   Text="{Binding Emoji}"
-                                                   FontSize="28"
-                                                   VerticalOptions="Center" />
+                                            <Image Grid.Column="1"
+                                                   Source="{Binding Icon}"
+                                                   WidthRequest="36"
+                                                   HeightRequest="36"
+                                                   VerticalOptions="Center"
+                                                   SemanticProperties.Description="{Binding Description}" />
 
                                             <VerticalStackLayout Grid.Column="2" VerticalOptions="Center">
                                                 <Label Text="{Binding Description}" />
