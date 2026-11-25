@@ -29,6 +29,8 @@ namespace WeatherStation
             // Pages (registered so they can receive services in their constructors)
             builder.Services.AddTransient<ForecastPage>();
             builder.Services.AddTransient<ForecastViewModel>();
+            builder.Services.AddTransient<LocationsPage>();
+            builder.Services.AddTransient<LocationsViewModel>();
 
 #if DEBUG
             builder.Logging.AddDebug();

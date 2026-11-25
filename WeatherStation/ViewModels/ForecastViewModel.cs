@@ -7,7 +7,7 @@ using WeatherStation.Services;
 
 namespace WeatherStation.ViewModels;
 
-public class ForecastViewModel : BaseViewModel
+public class ForecastViewModel : BaseViewModel, IQueryAttributable
 {
     private readonly IForecastRepository _repository;
     private readonly IUserDataService _userData;
@@ -20,6 +20,7 @@ public class ForecastViewModel : BaseViewModel
     private bool _isBusy;
     private string? _statusMessage;
     private bool _initialized;
+    private WeatherLocation? _requestedLocation;
     private CancellationTokenSource? _loadCts;
 
     public ForecastViewModel(
@@ -150,9 +151,28 @@ public class ForecastViewModel : BaseViewModel
         // Start with the default location, else the last one viewed, else the first in the list.
         // We match by Id so we pick the same object the Picker is showing.
         var last = await _userData.GetLastSelectedAsync();
-        SelectedLocation = FindInCatalog(_settings.DefaultLocationId)
-                           ?? FindInCatalog(last?.Id)
-                           ?? LocationCatalog.All[0];
+        SelectedLocation = FindInCatalog(_requestedLocation?.Id)
+                   ?? FindInCatalog(_settings.DefaultLocationId)
+                   ?? FindInCatalog(last?.Id)
+                   ?? LocationCatalog.All[0];
+    }
+
+    // Shell calls this when another page navigates here with a "location" parameter.
+    public void ApplyQueryAttributes(IDictionary<string, object> query)
+    {
+        if (!query.TryGetValue("location", out var value) || value is not WeatherLocation location)
+        {
+            return;
+        }
+
+        // Saved favourites are copies loaded from JSON; use the catalogue instance so the Picker matches it.
+        var match = FindInCatalog(location.Id) ?? location;
+        _requestedLocation = match;
+
+        if (_initialized)
+        {
+            SelectedLocation = match; // the setter loads the forecast
+        }
     }
 
     private async Task LoadForecastAsync(bool forceRefresh)

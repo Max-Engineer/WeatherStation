@@ -13,6 +13,11 @@
             Icon="tab_forecast.png"
             ContentTemplate="{DataTemplate views:ForecastPage}"
             Route="ForecastPage" />
+        <ShellContent
+            Title="Locations"
+            Icon="tab_locations.png"
+            ContentTemplate="{DataTemplate views:LocationsPage}"
+            Route="LocationsPage" />
 
         <ShellContent
             Title="Compare"

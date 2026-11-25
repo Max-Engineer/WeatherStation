@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:WeatherStation.ViewModels"
+             x:Class="WeatherStation.Views.LocationsPage"
+             x:DataType="vm:LocationsViewModel"
+             Title="Locations">
+
+    <ContentPage.Resources>
+        <Style x:Key="CaptionLabel" TargetType="Label">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="TextColor"
+                    Value="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray300}}" />
+        </Style>
+
+        <!-- One row, reused by all three sections. The tap area is only the text column,
+             so tapping the star never also selects the row. -->
+        <DataTemplate x:Key="LocationRowTemplate" x:DataType="vm:LocationItem">
+            <VerticalStackLayout>
+                <BoxView HeightRequest="1"
+                         Color="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}" />
+                <Grid ColumnDefinitions="*,Auto" Padding="0,2">
+                    <VerticalStackLayout Padding="0,8"
+                                         VerticalOptions="Center"
+                                         BackgroundColor="Transparent">
+                        <Label Text="{Binding Name}" FontAttributes="Bold" />
+                        <Label Text="{Binding Country}" Style="{StaticResource CaptionLabel}" />
+                        <VerticalStackLayout.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding SelectCommand}"
+                                                  CommandParameter="{Binding Location}" />
+                        </VerticalStackLayout.GestureRecognizers>
+                    </VerticalStackLayout>
+
+                    <Button Grid.Column="1"
+                            Text="{Binding FavouriteGlyph}"
+                            Command="{Binding ToggleFavouriteCommand}"
+                            CommandParameter="{Binding Location}"
+                            BackgroundColor="Transparent"
+                            TextColor="#F59E0B"
+                            FontSize="24"
+                            Padding="0"
+                            WidthRequest="48"
+                            HeightRequest="48"
+                            VerticalOptions="Center"
+                            SemanticProperties.Description="{Binding FavouriteDescription}" />
+                </Grid>
+            </VerticalStackLayout>
+        </DataTemplate>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="Auto,*">
+
+        <SearchBar Placeholder="Search locations"
+                   Text="{Binding SearchText}"
+                   Margin="12,8,12,0" />
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="16" Spacing="16">
+
+                <!-- Error message -->
+                <Border IsVisible="{Binding HasStatus}"
+                        BackgroundColor="#FEF3C7"
+                        Stroke="#F59E0B"
+                        StrokeThickness="1"
+                        StrokeShape="RoundRectangle 12"
+                        Padding="12">
+                    <Label Text="{Binding StatusMessage}" TextColor="#92400E" />
+                </Border>
+
+                <Label IsVisible="{Binding ShowFavouritesHint}"
+                       Text="Tap the star next to a location to save it as a favourite."
+                       Style="{StaticResource CaptionLabel}" />
+
+                <!-- Favourites -->
+                <VerticalStackLayout IsVisible="{Binding HasFavourites}" Spacing="4">
+                    <Label Text="Favourites" FontSize="18" FontAttributes="Bold" />
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding FavouriteItems}"
+                                         BindableLayout.ItemTemplate="{StaticResource LocationRowTemplate}" />
+                </VerticalStackLayout>
+
+                <!-- Recent -->
+                <VerticalStackLayout IsVisible="{Binding HasRecent}" Spacing="4">
+                    <Label Text="Recently viewed" FontSize="18" FontAttributes="Bold" />
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding RecentItems}"
+                                         BindableLayout.ItemTemplate="{StaticResource LocationRowTemplate}" />
+                </VerticalStackLayout>
+
+                <!-- All locations -->
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="All locations" FontSize="18" FontAttributes="Bold" />
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding AllItems}"
+                                         BindableLayout.ItemTemplate="{StaticResource LocationRowTemplate}" />
+                    <Label IsVisible="{Binding ShowNoResults}"
+                           Text="No locations match your search."
+                           Style="{StaticResource CaptionLabel}"
+                           HorizontalOptions="Center"
+                           Margin="0,12,0,0" />
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>
